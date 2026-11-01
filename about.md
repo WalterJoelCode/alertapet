@@ -1,0 +1,7 @@
+AlertaPet es una plataforma web y red social dedicada a conectar personas, comunidades, organizaciones y albergues comprometidos con la protección y el bienestar animal. Su propósito es crear un espacio digital colaborativo donde los usuarios puedan compartir noticias, difundir alertas sobre mascotas desaparecidas, promover adopciones responsables, solicitar ayuda y participar en iniciativas solidarias.
+
+La plataforma permite que cada usuario cree una cuenta personal, registre los perfiles de sus mascotas y administre sus propias publicaciones. A través de un sistema de noticias, alertas y contenido comunitario, los miembros pueden compartir fotografías, ubicaciones, información relevante y actualizaciones sobre situaciones que requieren atención, facilitando la interacción y colaboración entre personas que comparten el interés por los animales.
+
+Además, AlertaPet ofrece un espacio para que albergues, rescatistas independientes y organizaciones de protección animal den a conocer sus actividades, publiquen solicitudes de apoyo, promuevan campañas de donación y encuentren posibles adoptantes. De esta manera, la plataforma busca ampliar la visibilidad de las necesidades de la comunidad animalista y facilitar la participación ciudadana.
+
+Más que un sitio de publicaciones, AlertaPet busca consolidarse como una comunidad digital de apoyo animal, integrando herramientas de comunicación, gestión de mascotas, difusión de información y colaboración social en una experiencia accesible, intuitiva y confiable.

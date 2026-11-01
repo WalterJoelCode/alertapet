@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@theme {
+    --font-sans: Lato, 'Segoe UI', Arial, sans-serif;
+    --color-pet-primary: #c8a11f;
+    --color-pet-surface: #e6e8ea;
+    --color-pet-slate: #6f7a85;
+    --color-pet-charcoal: #2c3136;
+    --color-pet-taupe: #8f7d5b;
+    --color-pet-gold-strong: #806400;
+    --color-pet-marine: #c8a11f;
+    --color-pet-deep: #2c3136;
+    --color-pet-cream: #ffffff;
+    --color-pet-sepia: #8f7d5b;
+    --color-pet-leather: #8f7d5b;
+    --color-pet-ink: #2c3136;
+    --color-pet-muted: #6f7a85;
+}
+
+@layer base {
+    :root { --pet-primary: #c8a11f; --pet-surface: #e6e8ea; --pet-slate: #6f7a85; --pet-charcoal: #2c3136; --pet-taupe: #8f7d5b; --pet-gold-strong: #806400; --pet-marine: var(--pet-primary); --pet-deep: var(--pet-charcoal); --pet-cream: #fff; --pet-sepia: var(--pet-taupe); --pet-leather: var(--pet-taupe); --pet-ink: var(--pet-charcoal); --pet-muted: var(--pet-slate); }
+    html { scroll-behavior: smooth; }
+    body { min-height: 100vh; background: #fff; color: var(--pet-ink); font-family: Lato, 'Segoe UI', Arial, sans-serif; }
+    button, a, summary { transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+    a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--pet-gold-strong); outline-offset: 3px; }
+}
+
+@layer components {
+    .page-shell { @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10; }
+    .eyebrow { @apply text-xs font-bold tracking-[.16em] text-pet-gold-strong uppercase; }
+    .section-title { @apply mt-3 max-w-2xl text-3xl font-bold tracking-tight text-pet-deep sm:text-4xl; }
+    .section-copy { @apply mt-4 max-w-2xl text-base leading-7 text-pet-muted; }
+    .button-primary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-pet-primary px-5 py-3 text-sm font-bold text-pet-charcoal shadow-sm hover:brightness-95 focus-visible:outline-pet-gold-strong; }
+    .button-secondary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-pet-charcoal/20 bg-white px-5 py-3 text-sm font-bold text-pet-charcoal hover:border-pet-charcoal hover:bg-pet-surface focus-visible:outline-pet-gold-strong; }
+    .button-tertiary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-pet-charcoal hover:bg-pet-surface focus-visible:outline-pet-gold-strong; }
+    .surface-card { @apply rounded-2xl border border-pet-charcoal/10 bg-white shadow-[0_2px_10px_rgb(44_49_54_/_0.05)] transition-[transform,border-color,box-shadow] duration-200 ease-out; }
+    .status-badge { @apply inline-flex items-center gap-1 rounded-full bg-pet-surface px-3 py-1 text-xs font-bold text-pet-charcoal; }
+    .skeleton { background: linear-gradient(110deg, #e6e8ea 8%, #f7f8f8 18%, #e6e8ea 33%); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
+}
+
+@keyframes shimmer { to { background-position-x: -200%; } }
+
+@media (hover: hover) and (pointer: fine) { .surface-card:hover { transform: translateY(-2px); border-color: rgb(44 49 54 / 22%); box-shadow: 0 10px 24px rgb(44 49 54 / 8%); } }
+.scrollbar-hidden { scrollbar-width: none; }
+.scrollbar-hidden::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
