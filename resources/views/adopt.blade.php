@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <section class="border-b border-pet-charcoal/10 bg-pet-surface py-7 sm:py-9"><div class="page-shell"><p class="eyebrow">Adopción responsable</p><div class="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h1 class="text-3xl font-black tracking-tight text-pet-charcoal sm:text-4xl">Encuentra un compañero cerca de ti.</h1><p class="mt-2 max-w-2xl text-sm leading-6 text-pet-slate sm:text-base">Explora por especie, categoría, raza y ubicación.</p></div><button type="button" id="open-location-picker" class="button-primary self-start sm:self-auto"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> Usar mi ubicación</button></div></div>
+    <section class="border-b border-pet-charcoal/10 bg-pet-surface py-5 sm:py-6"><div class="page-shell"><p class="eyebrow">Adopción responsable</p><div class="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h1 class="text-3xl font-black tracking-tight text-pet-charcoal sm:text-4xl">Encuentra un compañero cerca de ti.</h1><p class="mt-2 max-w-2xl text-sm leading-6 text-pet-slate sm:text-base">Explora por especie, categoría, raza y ubicación.</p></div><button type="button" id="open-location-picker" class="button-primary self-start sm:self-auto"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> Usar mi ubicación</button></div></div>
     </section>
 
     <section class="py-6 sm:py-8"><div class="page-shell"><div class="grid gap-6 xl:grid-cols-[17rem_minmax(0,1fr)]">
@@ -15,6 +15,7 @@
 @push('scripts')
     <script>
         const googleMapsApiKey = @json(config('services.google_maps.key'));
+        const googleMapsMapId = @json(config('services.google_maps.map_id') ?: 'DEMO_MAP_ID');
         const dialog = document.getElementById('location-dialog');
         const openPicker = document.getElementById('open-location-picker');
         const closePicker = document.getElementById('close-location-picker');
@@ -28,30 +29,52 @@
         let googleMarker;
         let googleRadiusCircle;
         let selectedLocation;
+        let AdvancedMarkerElement;
+        const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+        const darkMapStyles = [
+            { elementType: 'geometry', stylers: [{ color: '#242424' }] },
+            { elementType: 'labels.text.fill', stylers: [{ color: '#bdbdbd' }] },
+            { elementType: 'labels.text.stroke', stylers: [{ color: '#242424' }] },
+            { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#3f3f3f' }] },
+            { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#2e2e2e' }] },
+            { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263127' }] },
+            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#383838' }] },
+            { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#4a4a4a' }] },
+            { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#303030' }] },
+            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#151515' }] },
+        ];
 
         const formatLocation = (location) => `${location.lat().toFixed(4)}, ${location.lng().toFixed(4)}`;
-        const setSelectedLocation = (location) => { selectedLocation = location; googleMarker?.setPosition(location) || (googleMarker = new google.maps.Marker({ map: googleMap, position: location })); googleRadiusCircle?.setCenter(location).setRadius(Number(radiusInput.value) * 1000) || (googleRadiusCircle = new google.maps.Circle({ map: googleMap, center: location, radius: Number(radiusInput.value) * 1000, strokeColor: '#806400', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#C8A11F', fillOpacity: 0.15 })); pickerStatus.textContent = `Punto seleccionado: ${formatLocation(location)}.`; confirmLocation.disabled = false; };
+        const setSelectedLocation = (location) => {
+            selectedLocation = location;
 
-        const loadGoogleMaps = () => new Promise((resolve, reject) => {
-            if (window.google?.maps) { resolve(); return; }
-            if (!googleMapsApiKey) { reject(new Error('missing-key')); return; }
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(googleMapsApiKey)}&v=weekly`;
-            script.async = true;
-            script.onload = resolve;
-            script.onerror = () => reject(new Error('load-failed'));
-            document.head.append(script);
-        });
+            if (googleMarker) {
+                googleMarker.position = location;
+            } else {
+                googleMarker = new AdvancedMarkerElement({ map: googleMap, position: location });
+            }
+
+            if (googleRadiusCircle) {
+                googleRadiusCircle.setCenter(location);
+                googleRadiusCircle.setRadius(Number(radiusInput.value) * 1000);
+            } else {
+                googleRadiusCircle = new google.maps.Circle({ map: googleMap, center: location, radius: Number(radiusInput.value) * 1000, strokeColor: '#FF385C', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#FF385C', fillOpacity: 0.15 });
+            }
+
+            pickerStatus.textContent = `Punto seleccionado: ${formatLocation(location)}.`;
+            confirmLocation.disabled = false;
+        };
 
         const initializeMap = async () => {
             try {
-                await loadGoogleMaps();
+                const libraries = await window.alertaPetGoogleMaps.loadGoogleMapsLibraries({ key: googleMapsApiKey, mapId: googleMapsMapId });
+                AdvancedMarkerElement = libraries.AdvancedMarkerElement;
                 if (googleMap) { return; }
                 const center = { lat: 12.1364, lng: -86.2514 };
-                googleMap = new google.maps.Map(document.getElementById('google-map'), { center, zoom: 12, mapTypeControl: false, streetViewControl: false, fullscreenControl: true });
+                googleMap = new libraries.Map(document.getElementById('google-map'), { center, zoom: 12, mapId: googleMapsMapId, mapTypeControl: false, streetViewControl: false, fullscreenControl: true, styles: document.documentElement.dataset.theme === 'dark' ? darkMapStyles : null });
                 googleMap.addListener('click', (event) => setSelectedLocation(event.latLng));
             } catch (error) {
-                pickerStatus.textContent = error.message === 'missing-key' ? 'Configura GOOGLE_MAPS_API_KEY para habilitar Google Maps.' : 'No fue posible cargar Google Maps. Intenta de nuevo más tarde.';
+                pickerStatus.textContent = error.message === 'missing-key' ? 'Configura GOOGLE_MAPS_API_KEY para habilitar Google Maps.' : 'No fue posible cargar Google Maps. Revisa tu conexión o bloqueador de contenido.';
             }
         };
 
@@ -59,7 +82,9 @@
         closePicker.addEventListener('click', () => dialog.close());
         dialog.addEventListener('click', (event) => { if (event.target === dialog) { dialog.close(); } });
         radiusInput.addEventListener('input', () => { radiusOutput.textContent = `${radiusInput.value} km`; googleRadiusCircle?.setRadius(Number(radiusInput.value) * 1000); if (selectedLocation) { locationSummary.textContent = `Centro: ${formatLocation(selectedLocation)} · radio de ${radiusInput.value} km.`; } });
-        useCurrentLocation.addEventListener('click', () => { if (!googleMap || !window.google?.maps) { pickerStatus.textContent = 'Google Maps debe estar configurado antes de usar tu ubicación.'; return; } navigator.geolocation?.getCurrentPosition((position) => { const point = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); googleMap.setCenter(point); googleMap.setZoom(14); setSelectedLocation(point); }, () => { pickerStatus.textContent = 'No se pudo obtener tu ubicación. Puedes seleccionar un punto manualmente.'; }); });
+        useCurrentLocation.addEventListener('click', () => { if (!googleMap) { pickerStatus.textContent = 'Google Maps debe estar configurado antes de usar tu ubicación.'; return; } navigator.geolocation?.getCurrentPosition((position) => { const point = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); googleMap.setCenter(point); googleMap.setZoom(14); setSelectedLocation(point); }, () => { pickerStatus.textContent = 'No se pudo obtener tu ubicación. Puedes seleccionar un punto manualmente.'; }); });
         confirmLocation.addEventListener('click', () => { locationSummary.textContent = `Centro: ${formatLocation(selectedLocation)} · radio de ${radiusInput.value} km.`; dialog.close(); });
+        systemDarkMode.addEventListener('change', (event) => googleMap?.setOptions({ styles: event.matches ? darkMapStyles : null }));
+        window.addEventListener('alertapet:theme-changed', (event) => googleMap?.setOptions({ styles: event.detail.theme === 'dark' ? darkMapStyles : null }));
     </script>
 @endpush

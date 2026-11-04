@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <section class="bg-pet-surface py-12 sm:py-20"><div class="page-shell grid max-w-5xl overflow-hidden rounded-3xl border border-pet-charcoal/10 bg-white shadow-[0_16px_45px_rgb(44_49_54_/_0.08)] lg:grid-cols-[.85fr_1.15fr] lg:px-0">
+    <section class="bg-pet-surface py-8 sm:py-12"><div class="page-shell grid max-w-5xl overflow-hidden rounded-3xl border border-pet-charcoal/10 bg-white shadow-[0_16px_45px_rgb(44_49_54_/_0.08)] lg:grid-cols-[.85fr_1.15fr] lg:px-0">
         <div class="hidden bg-pet-charcoal p-10 text-white lg:block"><p class="eyebrow !text-pet-primary">AlertaPet</p><h1 class="mt-4 text-4xl font-black leading-tight">Volvamos a estar cerca.</h1><p class="mt-5 max-w-sm leading-7 text-white/75">Ingresa para participar en una red que acompaña, difunde y protege.</p><div class="mt-16 border-t border-white/15 pt-5 text-sm text-white/65"><i class="fa-solid fa-paw mr-2 text-pet-primary" aria-hidden="true"></i> Tu cuenta te permite gestionar tus publicaciones.</div></div>
         <div class="p-6 sm:p-10"><p class="eyebrow">Acceso</p><h2 class="mt-3 text-3xl font-black text-pet-charcoal">Bienvenido de vuelta</h2><p class="mt-2 text-sm leading-6 text-pet-slate">Ingresa con tu correo y contraseña.</p>
             <form class="mt-7 grid gap-5" method="POST" action="{{ route('login.store') }}">@csrf
@@ -9,8 +9,8 @@
                 <button class="button-primary w-full" type="submit">Iniciar sesión <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
             </form>
             <div class="my-7 flex items-center gap-3 text-xs font-bold uppercase tracking-[.12em] text-pet-slate"><span class="h-px flex-1 bg-pet-surface"></span>o continúa con<span class="h-px flex-1 bg-pet-surface"></span></div>
-            <div class="grid gap-3 sm:grid-cols-3">@foreach ([['fa-google', 'Google'], ['fa-facebook', 'Facebook'], ['fa-microsoft', 'Microsoft']] as [$icon, $provider])<button type="button" disabled aria-describedby="providers-note" class="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-pet-charcoal/15 bg-pet-surface px-3 text-sm font-bold text-pet-slate disabled:cursor-not-allowed disabled:opacity-75"><i class="fa-brands {{ $icon }}" aria-hidden="true"></i><span class="sm:sr-only">Continuar con </span>{{ $provider }}</button>@endforeach</div>
-            <p id="providers-note" class="mt-3 text-xs leading-5 text-pet-slate">El acceso con proveedores externos se habilitará cuando se configuren sus credenciales OAuth.</p>
+            <div class="grid gap-3 sm:grid-cols-3">@foreach ([['google', 'fa-google', 'Google'], ['facebook', 'fa-facebook', 'Facebook'], ['microsoft', 'fa-microsoft', 'Microsoft']] as [$provider, $icon, $label])<a href="{{ route('social.redirect', $provider) }}" class="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-pet-charcoal/15 bg-pet-surface px-3 text-sm font-bold text-pet-slate hover:border-pet-gold-strong hover:bg-white"><i class="fa-brands {{ $icon }}" aria-hidden="true"></i><span class="sm:sr-only">Continuar con </span>{{ $label }}</a>@endforeach</div>
+            @error('social')<p class="mt-3 text-xs leading-5 text-red-700">{{ $message }}</p>@enderror
             <p class="mt-7 text-center text-sm text-pet-slate">¿Aún no tienes cuenta? <a class="font-bold text-pet-gold-strong underline-offset-4 hover:underline" href="{{ route('register') }}">Crea una cuenta</a></p>
         </div>
     </div></section>

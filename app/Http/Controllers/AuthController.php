@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -33,8 +35,22 @@ class AuthController extends Controller
 
     public function registerStore(Request $request): RedirectResponse
     {
-        $data = $request->validate(['name' => ['required', 'string', 'max:255'], 'email' => ['required', 'email', 'max:255', 'unique:users'], 'password' => ['required', 'confirmed', 'min:8']]);
-        $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => Hash::make($data['password'])]);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users'],
+            'recovery_email' => ['nullable', 'email', 'max:255', 'different:email', Rule::unique('users', 'recovery_email')],
+            'password' => ['required', 'confirmed', 'min:8'],
+            'terms_accepted' => ['accepted'],
+        ]);
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'recovery_email' => $data['recovery_email'],
+            'password' => Hash::make($data['password']),
+            'role_id' => Role::general()->id,
+            'terms_accepted' => true,
+            'terms_accepted_at' => now(),
+        ]);
         Auth::login($user);
         $request->session()->regenerate();
 
